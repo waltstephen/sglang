@@ -21,6 +21,7 @@ import os
 from sglang.srt.utils.common import kill_itself_when_parent_died, kill_process_tree
 from sglang.srt.utils.network import NetworkAddress
 from sglang.srt.utils.watchdog import SubprocessWatchdog
+from sglang.srt.runtime_context import get_serving
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ def _loopback_host(host: str) -> str:
 
 def build_sidecar_endpoint(server_args) -> str:
     return NetworkAddress(
-        _loopback_host(server_args.host), server_args.grpc_port
+        _loopback_host(server_args.host), get_serving().grpc_port
     ).to_url()
 
 
