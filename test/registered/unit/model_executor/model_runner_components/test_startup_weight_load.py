@@ -20,6 +20,7 @@ from sglang.srt.configs.model_config import ModelImpl
 from sglang.srt.managers.tp_worker import TpModelWorker
 from sglang.srt.model_executor.cuda_graph_config import Backend, CudaGraphConfig
 from sglang.srt.model_executor.model_runner import ModelRunner
+from sglang.srt.runtime_context import publish, reset_context
 from sglang.srt.model_executor.model_runner_components.startup_weight_load import (
     ModelStorageManifest,
     StartupWeightLoadManager,
