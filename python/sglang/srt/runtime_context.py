@@ -898,6 +898,31 @@ class RuntimeContext:
             bag._set(name, value)
         self._overrides_log.append((source, dict(fields)))
 
+    def config_leaf(self, name: str):
+        """One resolved config leaf by field name — the read side of ``override``.
+
+        Callers that hold a field name rather than a namespace (a readback
+        endpoint, a control-plane handler) would otherwise have to know which
+        bag it lives in.
+        """
+        bags = self._config_bags
+        if bags is None:
+            raise ValueError("config not published; cannot read a config leaf")
+        from sglang.srt.arg_groups.arg_utils import namespace_of
+
+        path = namespace_of(type(self._server_args)).get(name)
+        if path is None:
+            raise ValueError(f"{name!r} is not a config leaf (no NS namespace)")
+        parts = path.split(".")
+        bag = bags.get(parts[0])
+        if bag is None:
+            raise ValueError(f"namespace {parts[0]!r} not published")
+        for seg in parts[1:]:
+            bag = object.__getattribute__(bag, "_subs").get(seg)
+            if bag is None:
+                raise ValueError(f"subgroup {seg!r} missing under {path!r}")
+        return getattr(bag, name)
+
     def overrides_log(self) -> list:
         """Provenance of post-publish ``override`` calls: ``[(source, {field: value})]``.
 
