@@ -243,14 +243,18 @@ class TestServerInfoKvEventsField(CustomTestCase):
 
 
 class TestServerInfoControlPlaneUpdates(CustomTestCase):
-    """Runtime control-plane updates live on the manager, not on ServerArgs."""
+    """/server_info answers what was asked for, not what is in effect."""
 
-    def test_recorded_updates_win_over_the_startup_config(self):
+    def test_the_readback_reports_the_record_not_the_control_plane(self):
+        # The endpoint is the record's readback: a runtime weight-version
+        # change belongs to /get_weight_version and /model_info, which read
+        # the control-plane log. Overlaying it here would make the one
+        # endpoint that reports the user's input report something else.
         server_args = ServerArgs(model_path="dummy", weight_version="v1")
         payload = _call_server_info_with(
             server_args, config_updates={"weight_version": "v2"}
         )
-        self.assertEqual(payload["weight_version"], "v2")
+        self.assertEqual(payload["weight_version"], "v1")
         self.assertEqual(server_args.weight_version, "v1")
 
 

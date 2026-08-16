@@ -413,8 +413,8 @@ class RuntimeHandle:
         return json.dumps(result, default=str)
 
     def get_server_info(self) -> str:
-        result: Dict[str, Any] = self.tokenizer_manager.resolved_config_dict(
-            dataclasses.asdict(self.tokenizer_manager.server_args)
+        result: Dict[str, Any] = dataclasses.asdict(
+            self.tokenizer_manager.server_args
         )
         result.update(self.scheduler_info)
         return json.dumps(msgspec_to_builtins(result), default=str)
